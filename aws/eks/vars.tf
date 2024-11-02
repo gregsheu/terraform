@@ -25,3 +25,8 @@ variable "min_node" {
 variable "max_node" {
   description = "Maximum of node group"
 }
+
+variable "eks_version" {
+  default = "1.27"
+  description = "default eks version"
+}

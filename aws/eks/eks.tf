@@ -8,6 +8,7 @@ resource "aws_eks_cluster" "cluster" {
   }
   #enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  version = var.eks_version
 }
 
 resource "aws_cloudwatch_log_group" "cluster" {
@@ -34,13 +35,15 @@ resource "aws_eks_node_group" "eks" {
     max_unavailable = 2
   }
 }
-
+#aws eks 1.30 doesn't need to create oidc resources
 resource "aws_eks_identity_provider_config" "eks" {
+  count = var.eks_version == "1.27" ? 1 : 0
   cluster_name = var.clustername
   oidc {
     client_id = replace(replace(data.tls_certificate.eks.url, "https://", ""), "oidc.eks.${data.aws_region.current.name}.amazonaws.com/id/", "")
     identity_provider_config_name = "eksoidc"
-    issuer_url = aws_eks_cluster.cluster.identity[0]["oidc"][0]["issuer"]
+    #issuer_url = aws_eks_cluster.cluster.identity[0]["oidc"][0]["issuer"]
+    issuer_url = aws_eks_cluster.cluster.identity[0].oidc[0].issuer
   }
 }
 
@@ -48,6 +51,7 @@ resource "aws_iam_openid_connect_provider" "eks" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = data.tls_certificate.eks.certificates[*].sha1_fingerprint
   url = aws_eks_cluster.cluster.identity[0]["oidc"][0]["issuer"]
+  #url = data.tls_certificate.eks.url
 }
 
 resource "aws_iam_role" "ekslb" {

@@ -70,7 +70,7 @@ resource "aws_route" "public_igw_route"{
 }
 
 resource "aws_eip" "nat_eip" {
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "vpc_ngw" {
