@@ -9,8 +9,16 @@ resource "helm_release" "nginx" {
     value = "ClusterIP"
   }
 
+  #set {
+  #  name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
+  #  value = "/healthz"
+  #}
   set {
-    name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
+    name = "kubernetes\\.io/ingress.class"
+    value = "azure/application-gateway"
+  }
+  set {
+    name = "appgw\\.ingress\\.kubernetes\\.io/backend-path-prefix"
     value = "/healthz"
   }
   #set {

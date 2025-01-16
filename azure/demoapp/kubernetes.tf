@@ -74,7 +74,8 @@ resource "kubernetes_ingress_v1" "demo" {
     namespace = kubernetes_namespace_v1.demo.metadata.0.name
   }
   spec {
-    ingress_class_name = "nginx"
+    #ingress_class_name = "nginx"
+    ingress_class_name = "azure-application-gateway"
     rule {
       host = "ayademogreg.myvnc.com"
       http {
