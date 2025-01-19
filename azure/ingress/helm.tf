@@ -111,10 +111,10 @@ resource "helm_release" "istio-gateway" {
   cleanup_on_fail = true
   create_namespace = true
 
-  #set {
-  #  name  = "service.type"
-  #  value = "ClusterIP"
-  #}
+  set {
+    name  = "service.type"
+    value = "ClusterIP"
+  }
 
   set {
     name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
