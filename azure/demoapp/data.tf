@@ -1,4 +1,5 @@
-data "azurerm_kubernetes_cluster" "default" {
-  name                = "${var.name}-aks"
-  resource_group_name = "${var.name}-rg"
+data "azurerm_kubernetes_cluster" "aks" {
+  name                = "${terraform.workspace}-aks-cluster"
+  resource_group_name = "${terraform.workspace}-aks-rg"
 }
+

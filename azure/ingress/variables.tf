@@ -9,7 +9,7 @@ variable "password" {
   description = "Azure Kubernetes Service Cluster password"
 }
 
-variable "name" {
-  description = "Azure Kubernetes Service Cluster password"
-  default = "ayademogreg"
-}
+#variable "name" {
+#  description = "Azure Kubernetes Service Cluster password"
+#  default = "ayademogreg"
+#}

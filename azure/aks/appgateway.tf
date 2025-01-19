@@ -1,65 +1,22 @@
-#resource "azurerm_resource_group" "main" {
-#  name     = "default-resources"
-#  location = "West US 2"
-#}
-
-resource "azurerm_virtual_network" "default" {
-  name                = "default-network"
-  resource_group_name = azurerm_resource_group.default.name
-  location            = azurerm_resource_group.default.location
-  address_space       = ["10.254.0.0/16"]
-}
-
-resource "azurerm_subnet" "frontend" {
-  name                 = "frontend"
-  resource_group_name  = azurerm_resource_group.default.name
-  virtual_network_name = azurerm_virtual_network.default.name
-  address_prefixes     = ["10.254.0.0/24"]
-}
-
-resource "azurerm_subnet" "backend" {
-  name                 = "backend"
-  resource_group_name  = azurerm_resource_group.default.name
-  virtual_network_name = azurerm_virtual_network.default.name
-  address_prefixes     = ["10.254.2.0/24"]
-  #delegation {
-  #  name = "delegation"
-  #  service_delegation {
-  #    name    = "Microsoft.Network/applicationGateways"
-  #    actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
-  #  }
-  #}
-  #delegation {
-  #  name = "delegation"
-  #  service_delegation {
-  #    name    = "Microsoft.ContainerInstance/containerGroups"
-  #    actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
-  #  }
-  #}
-}
-
-resource "azurerm_public_ip" "default" {
-  name                = "default-pip"
-  resource_group_name = azurerm_resource_group.default.name
-  location            = azurerm_resource_group.default.location
-  allocation_method   = "Static"
-}
-
-## since these variables are re-used - a locals block makes this more maintainable
 #locals {
-#  frontend_port_name             = "${azurerm_virtual_network.default.name}-feport"
-#  frontend_ip_configuration_name = "${azurerm_virtual_network.default.name}-feip"
-#  http_setting_name              = "${azurerm_virtual_network.default.name}-be-htst"
-#  listener_name                  = "${azurerm_virtual_network.default.name}-httplstn"
-#  request_routing_rule_name      = "${azurerm_virtual_network.default.name}-rqrt"
-#  redirect_configuration_name    = "${azurerm_virtual_network.default.name}-rdrcfg"
-#  backend_address_pool_name      = "${azurerm_virtual_network.default.name}-backend"
+#  frontend_port_name             = "${terraform.workspace}-${azurerm_virtual_network.network.name}-feport"
+#  frontend_ip_configuration_name = "${terraform.workspace}-${azurerm_virtual_network.network.name}-feip"
+#  http_setting_name              = "${terraform.workspace}-${azurerm_virtual_network.network.name}-be-htst"
+#  listener_name                  = "${terraform.workspace}-${azurerm_virtual_network.network.name}-httplstn"
+#  request_routing_rule_name      = "${terraform.workspace}-${azurerm_virtual_network.network.name}-rqrt"
+#  redirect_configuration_name    = "${terraform.workspace}-${azurerm_virtual_network.network.name}-rdrcfg"
+#  backend_address_pool_name      = "${terraform.workspace}-${azurerm_virtual_network.network.name}-backend"
 #}
 #
-#resource "azurerm_application_gateway" "network" {
-#  name                = "default-appgateway"
-#  resource_group_name = azurerm_resource_group.default.name
-#  location            = azurerm_resource_group.default.location
+#resource "azurerm_resource_group" "ag" {
+#  name     = "${terraform.workspace}-ag-rg"
+#  location = "West US 2"
+#}
+#
+#resource "azurerm_application_gateway" "ag" {
+#  name                = "${terraform.workspace}-ag"
+#  resource_group_name = azurerm_resource_group.ag.name
+#  location            = azurerm_resource_group.ag.location
 #
 #  sku {
 #    name     = "Standard_v2"
@@ -68,7 +25,7 @@ resource "azurerm_public_ip" "default" {
 #  }
 #
 #  gateway_ip_configuration {
-#    name      = "my-gateway-ip-configuration"
+#    name      = "${terraform.workspace}-ag-ip-conf"
 #    subnet_id = azurerm_subnet.frontend.id
 #  }
 #
@@ -79,7 +36,7 @@ resource "azurerm_public_ip" "default" {
 #
 #  frontend_ip_configuration {
 #    name                 = local.frontend_ip_configuration_name
-#    public_ip_address_id = azurerm_public_ip.default.id
+#    public_ip_address_id = azurerm_public_ip.ag.id
 #  }
 #
 #  backend_address_pool {
@@ -113,7 +70,7 @@ resource "azurerm_public_ip" "default" {
 #  }
 #
 #  url_path_map { 
-#    name  = "defaultmap" 
+#    name  = "${terraform.workspace}-urlpathmap" 
 #    default_backend_address_pool_name = local.backend_address_pool_name
 #    default_backend_http_settings_name = local.http_setting_name
 #    #default_redirect_configuration_name = "default-redirect" 
@@ -124,5 +81,5 @@ resource "azurerm_public_ip" "default" {
 #      backend_http_settings_name = local.http_setting_name
 #    } 
 #  }
-#  depends_on = [azurerm_virtual_network.default, azurerm_resource_group.default]
+#  depends_on = [azurerm_virtual_network.network, azurerm_resource_group.ag]
 #}

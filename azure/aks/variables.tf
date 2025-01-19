@@ -1,6 +1,3 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
 variable "appId" {
   description = "Azure Kubernetes Service Cluster service principal"
 }
@@ -9,7 +6,7 @@ variable "password" {
   description = "Azure Kubernetes Service Cluster password"
 }
 
-variable "name" {
-  description = "Azure Kubernetes Service Cluster password"
-  default = "ayademogreg"
-}
+#variable "name" {
+#  description = "Azure Kubernetes Service Cluster password"
+#  default = "${terraform.workspace}-aks"
+#}

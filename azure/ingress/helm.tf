@@ -110,16 +110,31 @@ resource "helm_release" "istio-gateway" {
   chart = "gateway"
   cleanup_on_fail = true
   create_namespace = true
+
   #set {
   #  name  = "service.type"
   #  value = "ClusterIP"
   #}
+
+  set {
+    name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
+    #name = "service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
+    value = "true"
+  }
+
+  set {
+    name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
+    #name = "service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
+    value = "/ready"
+  }
+
+  depends_on = [helm_release.istiod]
 }
 
 resource "terraform_data" "prometheus_addon" {
   provisioner "local-exec" {
     on_failure = continue
-    command = "kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.24/samples/addons/prometheus.yaml"
+    command = "kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.24/samples/addons/prometheus.yaml 2>/dev/null"
   }
   triggers_replace = {
     ts = timestamp()
@@ -162,12 +177,13 @@ resource "kubernetes_labels" "nginx" {
   labels = {
     istio-injection = "enabled"
   }
+  depends_on = [helm_release.nginx]
 }
 
 resource "terraform_data" "restart" {
   provisioner "local-exec" {
     on_failure = continue
-    command = "kubectl rollout restart deploy -n ingress-nginx nginx-ingress-ingress-nginx-controller"
+    command = "kubectl rollout restart deploy -n ingress-nginx nginx-ingress-ingress-nginx-controller 2>/dev/null"
   }
   triggers_replace = {
     ts = timestamp()
