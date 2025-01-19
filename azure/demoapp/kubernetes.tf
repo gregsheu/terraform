@@ -1,27 +1,3 @@
-resource "local_file" "kubeconfig" {
-  content  = <<EOL
-apiVersion: v1
-kind: Config
-clusters:
-- name: "kubernetes"
-  cluster:
-    certificate-authority-data: "${data.azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate}"
-    server: "${data.azurerm_kubernetes_cluster.aks.kube_config.0.host}"
-contexts:
-- name: "kubernetes-context"
-  context:
-    cluster: "kubernetes"
-    user: "kubernetes-user"
-current-context: "kubernetes-context"
-users:
-- name: "kubernetes-user"
-  user:
-    client-certificate-data: "${data.azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate}"
-    client-key-data: "${data.azurerm_kubernetes_cluster.aks.kube_config.0.client_key}"
-EOL
-  filename = "${path.module}/kubeconfig"
-}
-
 resource "kubernetes_namespace_v1" "demo" {
   metadata {
     name = "ayademo"

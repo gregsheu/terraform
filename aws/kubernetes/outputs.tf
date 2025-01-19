@@ -15,7 +15,7 @@ output "aws_ami" {
 }
 
 data "tls_certificate" "eks" {
-  url = data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer
+  url = data.aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
 
 data "kubernetes_config_map" "aws-auth" {

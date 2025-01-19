@@ -5,17 +5,17 @@ locals {
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
-data "aws_eks_cluster" "cluster" {
-  name = var.clustername
+data "aws_eks_cluster" "eks" {
+  name = "${terraform.workspace}-${var.clustername}"
 }
 
-data "aws_eks_cluster_auth" "eksauth" {
-  name = var.clustername
+data "aws_eks_cluster_auth" "auth" {
+  name = "${terraform.workspace}-${var.clustername}"
 }
 
 data "aws_ami" "eks" {
   most_recent = true
-  #owners = ["amazon"]
+  owners = ["amazon"]
   filter {
     name = "owner-alias"
     values =["amazon"]
@@ -39,19 +39,19 @@ data "aws_ami" "eks" {
 }
 
 data "aws_iam_role" "ekscluster" {
-  name = "eksclusterrole"
+  name = "${terraform.workspace}-eksclusterrole"
 }
 
 data "aws_iam_role" "eksworker" {
-  name = "eksworkernoderole"
+  name = "${terraform.workspace}-eksworkernoderole"
 }
 
 data "aws_iam_role" "asg" {
-  name = "eksselfmanagednode"
+  name = "${terraform.workspace}-eksselfmanagednode"
 }
 
 data "aws_iam_role" "ekslb" {
-  name = "eksloadbalancercontroller"
+  name = "${terraform.workspace}-eksloadbalancercontroller"
 }
 
 data "aws_vpc" "default" {
@@ -60,7 +60,7 @@ data "aws_vpc" "default" {
   #  values = ["${var.vpc}"]
   #}
   tags = {
-    Name= "${var.env}-vpc"
+    Name= "${terraform.workspace}-vpc"
   }
 }
 
@@ -80,7 +80,7 @@ data "aws_security_groups" "default" {
   }
   filter {
     name   = "tag:Name"
-    values = ["${var.env}-defaultsg"]
+    values = ["${terraform.workspace}-defaultsg"]
   }
 }
 
@@ -91,7 +91,7 @@ data "aws_security_groups" "private" {
   }
   filter {
     name   = "tag:Name"
-    values = ["${var.env}-privatesg"]
+    values = ["${terraform.workspace}-privatesg"]
   }
 }
 
@@ -113,7 +113,7 @@ data "aws_subnets" "default" {
 #  }
 #  filter {
 #    name   = "tag:Name"
-#    values = ["${var.env}-publicsubnetc"]
+#    values = ["${terraform.workspace}-publicsubnetc"]
 #  }
 #}
 #
@@ -124,7 +124,7 @@ data "aws_subnets" "default" {
 #  }
 #  filter {
 #    name   = "tag:Name"
-#    values = ["${var.env}-privatesubneta"]
+#    values = ["${terraform.workspace}-privatesubneta"]
 #  }
 #}
 #
@@ -135,7 +135,7 @@ data "aws_subnets" "default" {
 #  }
 #  filter {
 #    name   = "tag:Name"
-#    values = ["${var.env}-privatesubnetb"]
+#    values = ["${terraform.workspace}-privatesubnetb"]
 #  }
 #}
 #
@@ -146,7 +146,7 @@ data "aws_subnets" "default" {
 #  }
 #  filter {
 #    name   = "tag:Name"
-#    values = ["${var.env}-privatesubnetc"]
+#    values = ["${terraform.workspace}-privatesubnetc"]
 #  }
 #}
 
@@ -196,7 +196,7 @@ data "aws_iam_policy" "s3" {
 }
 
 #data  "aws_ecr_repository" "ecr" {
-#  name = "${var.env}"
+#  name = "${terraform.workspace}"
 #}
 #
 #data "aws_route53_zone" "staging-sandbox" {

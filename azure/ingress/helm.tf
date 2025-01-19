@@ -15,38 +15,28 @@ resource "helm_release" "nginx" {
   cleanup_on_fail = true
   create_namespace = true
   set {
-    name  = "service.type"
+    name  = "controller.service.type"
     value = "ClusterIP"
   }
 
   set {
+    name  = "controller.replicaCount"
+    value = "2"
+  }
+
+  set {
     name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
-    #name = "service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
     value = "true"
   }
 
   set {
     name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
-    #name = "service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
     value = "/healthz"
   }
 
   #set {
-  #  name = "kubernetes\\.io/ingress.class"
+  #  name = "controller.service.annotations.kubernetes\\.io/ingress.class"
   #  value = "azure/application-gateway"
-  #}
-  #set {
-  #  name = "appgw\\.ingress\\.kubernetes\\.io/backend-path-prefix"
-  #  value = "/healthz"
-  #}
-  #set {
-  #  name  = "clusterName"
-  #  value = azurerm_kubernetes_cluster.default.name
-  #}
-
-  #set {
-  #  name  = "serviceAccount.name"
-  #  value = "aws-load-balancer-controller"
   #}
 }
 

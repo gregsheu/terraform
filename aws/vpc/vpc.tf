@@ -4,7 +4,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_support = true
   enable_dns_hostnames = true
   tags = {
-    Name = "${var.env}-vpc"
+    Name = "${terraform.workspace}-vpc"
   }
 }
 
@@ -15,7 +15,7 @@ resource "aws_subnet" "subnets" {
   cidr_block = "10.1.${count.index}.0/24"
   availability_zone_id = count.index < length(local.az_names) ? local.az_names[count.index] : local.az_names[count.index - length(local.az_names)]
   tags = {
-    Name = count.index < length(local.az_names) ? "${var.env}-public-subnet${count.index}" : "${var.env}-private-subnet${count.index}"
+    Name = count.index < length(local.az_names) ? "${terraform.workspace}-public-subnet${count.index}" : "${terraform.workspace}-private-subnet${count.index}"
     "kubernetes.io/role/elb" = count.index < length(local.az_names) ? "1" : ""
     "kubernetes.io/role/internal-elb" = count.index >= length(local.az_names) ? "1" : ""
   }
@@ -25,7 +25,7 @@ resource "aws_subnet" "subnets" {
 resource "aws_default_route_table" "main" {
   default_route_table_id = aws_vpc.vpc.default_route_table_id
   tags = {
-    Name = "${var.env}-mainroutetable"
+    Name = "${terraform.workspace}-mainroutetable"
   }
 }
 
@@ -40,7 +40,7 @@ resource "aws_route_table_association" "public_subnets" {
 resource "aws_route_table" "custom" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "${var.env}-customroutetable"
+    Name = "${terraform.workspace}-customroutetable"
   }
 }
 
@@ -54,7 +54,7 @@ resource "aws_route_table_association" "private_subnets" {
 resource "aws_internet_gateway" "vpc_igw"{
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "${var.env}-internetgateway"
+    Name = "${terraform.workspace}-internetgateway"
   }
 }
 
@@ -77,7 +77,7 @@ resource "aws_nat_gateway" "vpc_ngw" {
   allocation_id = aws_eip.nat_eip.allocation_id
   subnet_id = aws_subnet.subnets[0].id
   tags = {
-    Name = "${var.env}-natgateway"
+    Name = "${terraform.workspace}-natgateway"
   }
   #depends_on = [aws_internet_gateway.vpc_igw]
 }
@@ -89,7 +89,7 @@ resource "aws_route" "private_nat_route"{
 }
 
 resource "aws_security_group" "east1_default" {
-  name = "${var.env}-defaultsg"
+  name = "${terraform.workspace}-defaultsg"
   vpc_id = aws_vpc.vpc.id
   ingress {
     description = "SSH"
@@ -120,13 +120,13 @@ resource "aws_security_group" "east1_default" {
     ipv6_cidr_blocks = ["::/0"]
   }
   tags = {
-    Name = "${var.env}-defaultsg"
+    Name = "${terraform.workspace}-defaultsg"
     "kubernetes.io/cluster/${var.eksclustername}" = "owned"
   }
 }
 
 resource "aws_security_group" "east1_private" {
-  name = "${var.env}-private"
+  name = "${terraform.workspace}-private"
   vpc_id = aws_vpc.vpc.id
   ingress {
     from_port = 0
@@ -142,7 +142,7 @@ resource "aws_security_group" "east1_private" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "${var.env}-privatesg"
+    Name = "${terraform.workspace}-privatesg"
     "kubernetes.io/cluster/${var.eksclustername}" = "owned"
   }
   depends_on = [aws_vpc.vpc]

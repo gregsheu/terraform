@@ -48,7 +48,7 @@ data "aws_vpc" "default" {
   #  values = ["${var.vpc}"]
   #}
   tags = {
-    Name = "${var.env}-vpc"
+    Name = "${terraform.workspace}-vpc"
   }
 }
 
@@ -68,7 +68,7 @@ data "aws_security_groups" "default" {
   }
   filter {
     name   = "tag:Name"
-    values = ["${var.env}-defaultsg"]
+    values = ["${terraform.workspace}-defaultsg"]
   }
 }
 
@@ -79,7 +79,7 @@ data "aws_security_groups" "private" {
   }
   filter {
     name   = "tag:Name"
-    values = ["${var.env}-privatesg"]
+    values = ["${terraform.workspace}-privatesg"]
   }
 }
 
@@ -140,7 +140,7 @@ data "aws_iam_policy" "s3" {
 }
 
 #data  "aws_ecr_repository" "ecr" {
-#  name = "${var.env}"
+#  name = "${terraform.workspace}"
 #}
 #
 #data "aws_route53_zone" "staging-sandbox" {

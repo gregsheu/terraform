@@ -1,2 +1,2 @@
-env = "sandbox"
-eksclustername = "ekscluster1"
+env = "dev"
+eksclustername = "dev-ekscluster1"
