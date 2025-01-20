@@ -41,7 +41,7 @@ resource "helm_release" "nginx" {
 }
 
 resource "kubernetes_ingress_v1" "nginx_ag" {
-  #wait_for_load_balancer = true
+  wait_for_load_balancer = true
   metadata {
     name      = "nginx-internal"
     namespace = "ingress-nginx"
@@ -65,6 +65,7 @@ resource "kubernetes_ingress_v1" "nginx_ag" {
       }
     }
   }
+  depends_on = [helm_release.nginx]
 }
 
 resource "helm_release" "istio" {
