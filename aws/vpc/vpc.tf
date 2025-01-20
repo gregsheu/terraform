@@ -88,7 +88,7 @@ resource "aws_route" "private_nat_route"{
   nat_gateway_id = aws_nat_gateway.vpc_ngw.id
 }
 
-resource "aws_security_group" "east1_default" {
+resource "aws_security_group" "default" {
   name = "${terraform.workspace}-defaultsg"
   vpc_id = aws_vpc.vpc.id
   ingress {
@@ -121,18 +121,18 @@ resource "aws_security_group" "east1_default" {
   }
   tags = {
     Name = "${terraform.workspace}-defaultsg"
-    "kubernetes.io/cluster/${var.eksclustername}" = "owned"
+    "kubernetes.io/cluster/${terraform.workspace}-${var.eksclustername}" = "owned"
   }
 }
 
-resource "aws_security_group" "east1_private" {
+resource "aws_security_group" "private" {
   name = "${terraform.workspace}-private"
   vpc_id = aws_vpc.vpc.id
   ingress {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    security_groups = [aws_security_group.east1_default.id]
+    security_groups = [aws_security_group.default.id]
     self = "true"
   }
   egress {
@@ -143,7 +143,7 @@ resource "aws_security_group" "east1_private" {
   }
   tags = {
     Name = "${terraform.workspace}-privatesg"
-    "kubernetes.io/cluster/${var.eksclustername}" = "owned"
+    "kubernetes.io/cluster/${terraform.workspace}-${var.eksclustername}" = "owned"
   }
   depends_on = [aws_vpc.vpc]
 }

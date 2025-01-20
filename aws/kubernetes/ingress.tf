@@ -24,7 +24,7 @@ resource "helm_release" "nginx" {
   }
 }
 
-resource "kubernetes_ingress_v1" "nginx_ag" {
+resource "kubernetes_ingress_v1" "nginx_alb" {
   wait_for_load_balancer = true
   metadata {
     name      = "nginx"
@@ -49,7 +49,7 @@ resource "kubernetes_ingress_v1" "nginx_ag" {
     rule {
       http {
         path {
-          path = "/*"
+          path = "/"
           backend {
             service { 
               #name = "nginx-ingress-ingress-nginx-controller.ingress-nginx.svc.cluster.local"
@@ -91,21 +91,21 @@ resource "helm_release" "istiod" {
   #}
 }
 
-resource "helm_release" "istio-gateway" {
-  name = "istio-gateway"
-  namespace = "istio-ingress"
-  repository = "https://istio-release.storage.googleapis.com/charts"
-  chart = "gateway"
-  cleanup_on_fail = true
-  create_namespace = true
-
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
-
-  depends_on = [helm_release.istiod]
-}
+#resource "helm_release" "istio-gateway" {
+#  name = "istio-gateway"
+#  namespace = "istio-ingress"
+#  repository = "https://istio-release.storage.googleapis.com/charts"
+#  chart = "gateway"
+#  cleanup_on_fail = true
+#  create_namespace = true
+#
+#  #set {
+#  #  name  = "service.type"
+#  #  value = "ClusterIP"
+#  #}
+#
+#  depends_on = [helm_release.istiod]
+#}
 
 resource "terraform_data" "prometheus_addon" {
   provisioner "local-exec" {

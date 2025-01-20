@@ -1,2 +1,1 @@
-env = "dev"
-eksclustername = "dev-ekscluster1"
+eksclustername = "ekscluster1"

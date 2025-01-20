@@ -7,7 +7,7 @@ resource "helm_release" "ekslb" {
 
   set {
     name  = "clusterName"
-    value = var.clustername
+    value = "${terraform.workspace}-${var.clustername}"
   }
 
   set {

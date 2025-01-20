@@ -1,9 +1,9 @@
 resource "kubernetes_namespace_v1" "demo" {
   metadata {
     name = "ayademo"
-    labels = {
-      istio-injection = "enabled"
-    }
+    #labels = {
+    #  istio-injection = "enabled"
+    #}
   }
 }
 
@@ -13,7 +13,6 @@ resource "kubernetes_deployment_v1" "demo" {
     namespace = kubernetes_namespace_v1.demo.metadata.0.name
     labels = {
       app = "ayademo"
-      istio-injection = "enabled"
     }
   }
   spec {
@@ -101,9 +100,9 @@ resource "kubernetes_ingress_v1" "demo" {
 resource "kubernetes_namespace_v1" "aspnet" {
   metadata {
     name = "aspnetapp"
-    labels = {
-      istio-injection = "enabled"
-    }
+    #labels = {
+    #  istio-injection = "enabled"
+    #}
   }
 }
 
@@ -196,3 +195,46 @@ resource "kubernetes_ingress_v1" "aspnet" {
     }
   }
 }
+
+#resource "kubernetes_ingress_v1" "apps" {
+#  #wait_for_load_balancer = true
+#  metadata {
+#    name      = "appsingress"
+#    namespace = "ingress-nginx"
+#  }
+#  spec {
+#    ingress_class_name = "nginx"
+#    rule {
+#      host = "aspnetapp.myvnc.com"
+#      http {
+#        path {
+#          path = "/"
+#          backend {
+#            service { 
+#              name = "${kubernetes_service_v1.aspnet.metadata.0.name}"
+#              port { 
+#                number = 80 
+#              }
+#            }
+#          }
+#        }
+#      }
+#    }
+#    rule {
+#      host = "ayademogreg.myvnc.com"
+#      http {
+#        path {
+#          path = "/"
+#          backend {
+#            service { 
+#              name = "${kubernetes_service_v1.demo.metadata.0.name}"
+#              port { 
+#                number = 80 
+#              }
+#            }
+#          }
+#        }
+#      }
+#    }
+#  }
+#}

@@ -14,13 +14,7 @@ output "aws_ami" {
   value = data.aws_ami.eks.image_id
 }
 
-data "tls_certificate" "eks" {
-  url = data.aws_eks_cluster.eks.identity[0].oidc[0].issuer
+output "aws_auth" {
+  value = data.kubernetes_config_map.aws-auth.data.mapRoles
 }
 
-data "kubernetes_config_map" "aws-auth" {
-  metadata {
-    name = "aws-auth"
-    namespace = "kube-system"
-  }
-}
