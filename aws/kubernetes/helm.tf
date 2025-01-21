@@ -29,7 +29,6 @@ resource "helm_release" "ekslb" {
   # eks 1.30
   set {
     name  = "aws-region"
-    value = "us-east-2"
+    value = data.aws_region.current.name
   }
-  #depends_on = [null_resource.bootstrap]
 }

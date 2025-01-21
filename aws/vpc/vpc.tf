@@ -18,6 +18,7 @@ resource "aws_subnet" "subnets" {
     Name = count.index < length(local.az_names) ? "${terraform.workspace}-public-subnet${count.index}" : "${terraform.workspace}-private-subnet${count.index}"
     "kubernetes.io/role/elb" = count.index < length(local.az_names) ? "1" : ""
     "kubernetes.io/role/internal-elb" = count.index >= length(local.az_names) ? "1" : ""
+    "kubernetes.io/cluster/${terraform.workspace}-${var.clustername}" = "owned"
   }
 }
 
@@ -121,7 +122,7 @@ resource "aws_security_group" "default" {
   }
   tags = {
     Name = "${terraform.workspace}-defaultsg"
-    "kubernetes.io/cluster/${terraform.workspace}-${var.eksclustername}" = "owned"
+    "kubernetes.io/cluster/${terraform.workspace}-${var.clustername}" = "owned"
   }
 }
 
@@ -143,7 +144,7 @@ resource "aws_security_group" "private" {
   }
   tags = {
     Name = "${terraform.workspace}-privatesg"
-    "kubernetes.io/cluster/${terraform.workspace}-${var.eksclustername}" = "owned"
+    "kubernetes.io/cluster/${terraform.workspace}-${var.clustername}" = "owned"
   }
   depends_on = [aws_vpc.vpc]
 }

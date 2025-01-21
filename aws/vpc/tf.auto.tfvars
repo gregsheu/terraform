@@ -1,1 +1,1 @@
-eksclustername = "ekscluster1"
+clustername = "ekscluster1"

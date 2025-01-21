@@ -13,6 +13,15 @@ data "aws_vpc" "default" {
   }
 }
 
+data "aws_availability_zones" "default" {
+  #all_availability_zones = true
+  filter {
+    name = "opt-in-status"
+    #values = ["not-opted-in", "opted-in"]
+    values = ["opt-in-not-required"]
+  }
+}
+
 data "aws_subnets" "public" {
   filter {
     name   = "vpc-id"
@@ -64,15 +73,6 @@ data "aws_security_group" "default" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.default.id]
-  }
-}
-
-data "aws_availability_zones" "default" {
-  #all_availability_zones = true
-  filter {
-    name = "opt-in-status"
-    #values = ["not-opted-in", "opted-in"]
-    values = ["opt-in-not-required"]
   }
 }
 

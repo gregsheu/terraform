@@ -95,6 +95,17 @@ data "aws_security_groups" "private" {
   }
 }
 
+data "aws_security_group" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+  filter {
+    name   = "tag:Name"
+    values = ["${terraform.workspace}-privatesg"]
+  }
+}
+
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"

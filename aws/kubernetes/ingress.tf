@@ -18,10 +18,17 @@ resource "helm_release" "nginx" {
     name = "controller.replicaCount" 
     value = "2" 
   }
+
   set {
     name  = "controller.service.type"
     value = "NodePort"
   }
+  #Keeps here for reference
+  #set {
+  #  name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
+  #  value = "true"
+  #}
+  depends_on = [helm_release.ekslb]
 }
 
 resource "kubernetes_ingress_v1" "nginx_alb" {
@@ -40,6 +47,7 @@ resource "kubernetes_ingress_v1" "nginx_alb" {
       "alb.ingress.kubernetes.io/healthcheck-success-codes" = "200,404"
       "alb.ingress.kubernetes.io/scheme" = "internet-facing"
       "alb.ingress.kubernetes.io/target-type" = "instance"
+      "alb.ingress.kubernetes.io/subnets" = join(",", data.aws_subnets.public.ids)
       "external-dns.alpha.kubernetes.io/hostname" = "ayademogreg.myvnc.com,aspnetapp.myvnc.com"
       "external-dns.alpha.kubernetes.io/ingress-hostname-source" = "annotation-only"
     }
@@ -63,6 +71,7 @@ resource "kubernetes_ingress_v1" "nginx_alb" {
       }
     }
   }
+  depends_on = [helm_release.nginx]
 }
 
 resource "helm_release" "istio" {
@@ -91,21 +100,21 @@ resource "helm_release" "istiod" {
   #}
 }
 
-#resource "helm_release" "istio-gateway" {
-#  name = "istio-gateway"
-#  namespace = "istio-ingress"
-#  repository = "https://istio-release.storage.googleapis.com/charts"
-#  chart = "gateway"
-#  cleanup_on_fail = true
-#  create_namespace = true
-#
-#  #set {
-#  #  name  = "service.type"
-#  #  value = "ClusterIP"
-#  #}
-#
-#  depends_on = [helm_release.istiod]
-#}
+resource "helm_release" "istio-gateway" {
+  name = "istio-gateway"
+  namespace = "istio-ingress"
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart = "gateway"
+  cleanup_on_fail = true
+  create_namespace = true
+
+  set {
+    name  = "service.type"
+    value = "ClusterIP"
+  }
+
+  depends_on = [helm_release.istiod]
+}
 
 resource "terraform_data" "prometheus_addon" {
   provisioner "local-exec" {

@@ -2,6 +2,6 @@
 #  description = "Sandbox environment"
 #}
 
-variable "eksclustername" {
+variable "clustername" {
   description = "EKS cluster name"
 }
