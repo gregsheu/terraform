@@ -71,7 +71,7 @@ resource "kubernetes_ingress_v1" "nginx_alb" {
       }
     }
   }
-  depends_on = [helm_release.nginx]
+  depends_on = [helm_release.nginx, kubernetes_service_account.awslbcontroller]
 }
 
 resource "helm_release" "istio" {

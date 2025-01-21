@@ -28,7 +28,8 @@ resource "aws_launch_template" "asg" {
   }
   network_interfaces {
     #associate_public_ip_address = true
-    security_groups = [data.aws_security_groups.private.ids[0]]
+    #security_groups = [data.aws_security_groups.private.ids[0], data.aws_security_groups.default.ids[0]]
+    security_groups = [data.aws_eks_cluster.eks.vpc_config[0].cluster_security_group_id]
     #subnet_id = data.aws_subnets.default.ids[1]
   }
   tag_specifications {
