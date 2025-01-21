@@ -146,6 +146,7 @@ resource "helm_release" "kiali" {
   depends_on = [helm_release.istiod]
 }
 
+#Missing persistent volume
 #resource "helm_release" "prometheus" {
 #  name = "prometheus"
 #  namespace = "prometheus"
@@ -154,25 +155,25 @@ resource "helm_release" "kiali" {
 #  create_namespace = true
 #}
 
-#resource "kubernetes_labels" "nginx" {
-#  api_version = "v1"
-#  kind        = "Namespace"
-#  metadata {
-#    name = "ingress-nginx"
-#  }
-#  labels = {
-#    istio-injection = "enabled"
-#  }
-#  depends_on = [helm_release.nginx]
-#}
+resource "kubernetes_labels" "nginx" {
+  api_version = "v1"
+  kind        = "Namespace"
+  metadata {
+    name = "ingress-nginx"
+  }
+  labels = {
+    istio-injection = "enabled"
+  }
+  depends_on = [helm_release.nginx]
+}
 
-#resource "terraform_data" "restart" {
-#  provisioner "local-exec" {
-#    on_failure = continue
-#    command = "kubectl rollout restart deploy -n ingress-nginx nginx-ingress-ingress-nginx-controller 2>/dev/null"
-#  }
-#  triggers_replace = {
-#    ts = timestamp()
-#  }
-#  depends_on = [kubernetes_labels.nginx]
-#}
+resource "terraform_data" "restart" {
+  provisioner "local-exec" {
+    on_failure = continue
+    command = "kubectl rollout restart deploy -n ingress-nginx nginx-ingress-ingress-nginx-controller 2>/dev/null"
+  }
+  triggers_replace = {
+    ts = timestamp()
+  }
+  depends_on = [kubernetes_labels.nginx]
+}

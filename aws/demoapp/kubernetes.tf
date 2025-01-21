@@ -1,9 +1,9 @@
 resource "kubernetes_namespace_v1" "demo" {
   metadata {
     name = "ayademo"
-    #labels = {
-    #  istio-injection = "enabled"
-    #}
+    labels = {
+      istio-injection = "enabled"
+    }
   }
 }
 
@@ -100,9 +100,9 @@ resource "kubernetes_ingress_v1" "demo" {
 resource "kubernetes_namespace_v1" "aspnet" {
   metadata {
     name = "aspnetapp"
-    #labels = {
-    #  istio-injection = "enabled"
-    #}
+    labels = {
+      istio-injection = "enabled"
+    }
   }
 }
 
