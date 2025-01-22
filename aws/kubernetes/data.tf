@@ -22,7 +22,7 @@ data "aws_ami" "eks" {
   }
   filter {
     name = "name"
-    values =["*amazon-eks-node-1.25*"]
+    values =["*amazon-eks-node-${var.eks_version}*"]
   }
   filter {
     name = "is-public"

@@ -13,3 +13,7 @@ variable "keypair" {
 variable "clustername" {
   description = "Name of EKS Cluster"
 }
+
+variable "eks_version" {
+  description = "Version of EKS Cluster"
+}
