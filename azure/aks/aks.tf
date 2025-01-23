@@ -65,25 +65,35 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   #https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-new
   #Please ensure the identity used by AGIC has the Microsoft.Network/virtualNetworks/subnets/join/action permission delegated
-  #identity {
-  #  type = "SystemAssigned"
-  #}
-
-  service_principal {
-    client_id     = var.appId
-    client_secret = var.password
+  identity {
+    #type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.aks.id]
   }
+
+  #service_principal {
+  #  client_id     = var.appId
+  #  client_secret = var.password
+  #}
 
   role_based_access_control_enabled = true
 
   ingress_application_gateway {
     #gateway_id = azurerm_application_gateway.network.id
-    #subnet_cidr = ["10.225.0.0/16"]
-    subnet_id = azurerm_subnet.frontend.id
+    subnet_cidr = "10.254.1.0/24"
+    #subnet_id = azurerm_subnet.frontend.id
   }
 
   tags = {
     environment = "${terraform.workspace}-aks"
   }
   #depends_on = [azurerm_application_gateway.network]
+}
+
+resource "azurerm_role_assignment" "appgwy" {
+  principal_id   = azurerm_kubernetes_cluster.aks.ingress_application_gateway[0].ingress_application_gateway_identity[0].object_id
+  role_definition_name = "Network Contributor"
+  #scope          = azurerm_kubernetes_cluster.aks.node_resource_group_id
+  scope          = data.azurerm_subscription.greg.id
+  principal_type       = "ServicePrincipal"
 }
